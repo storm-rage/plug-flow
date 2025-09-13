@@ -1,0 +1,73 @@
+{
+  "name": "plugflow",
+  "version": "0.8.0",
+  "private": true,
+  "scripts": {
+    "build": "vue-tsc -b && vite build",
+    "dev": "vite",
+    "electron:build": "vite build --outDir dist && electron-builder",
+    "electron:dev": "concurrently \"vite dev\" \"wait-on http://localhost:5173 && electron .\"",
+    "preview": "vite preview"
+  },
+  "main": "./electron/main.js",
+  "dependencies": {
+    "@vue-flow/core": "^1.45.0",
+    "axios": "^1.11.0",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "register-service-worker": "^1.7.2",
+    "tdesign-vue-next": "^1.15.1",
+    "toml": "^3.0.0",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/cli-plugin-pwa": "~5.0.0",
+    "@vue/tsconfig": "^0.7.0",
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^37.2.3",
+    "electron-builder": "^26.0.12",
+    "electron-log": "^5.4.1",
+    "electron-packager": "^17.1.2",
+    "less": "^4.4.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4",
+    "vite-plugin-pwa": "^1.0.1",
+    "vue-tsc": "^2.2.12",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "com.plugflow.app",
+    "productName": "PlugFlow",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "icon": "electron/assets/app-icon.ico",
+    "win": {
+      "icon": "electron/assets/app-icon.ico",
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "electron/assets/installer-icon.ico",
+      "uninstallerIcon": "electron/assets/uninstaller-icon.ico",
+      "installerHeaderIcon": "electron/assets/app-icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "type": "module"
+}
