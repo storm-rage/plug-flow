@@ -2,7 +2,6 @@
 import { ref, reactive, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { Icon } from 'tdesign-icons-vue-next'
-// import { toolApi }  from '../../../api/index'
 import EmptyImgSrc from '../../../assets/empty.png';
 import excel from '../../../assets/doc/excel.png';
 import flow from '../../../assets/doc/flow.png';
@@ -12,7 +11,7 @@ import word from '../../../assets/doc/word.png';
 import ppt from '../../../assets/doc/ppt.png';
 import loadFailed from '../../../assets/doc/load_failed.png';
 import toolimg from '../../../assets/tool/toolimg.png';
-import { checkAppInstalled } from './tool';
+import { checkAppInstalled, generateUUID } from './tool';
 
 
 
@@ -141,13 +140,7 @@ function sortDocs() {
         return a._uuid.localeCompare(b._uuid)
     })
 }
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0,
-              v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
+
 let menuList: any = reactive([])
 
 let showDetail = ref(false)
@@ -373,7 +366,7 @@ onMounted(() => {
                     class="tools-item" 
                     v-for="(tool) in toolsList" 
                     :key="tool._uuid"
-                    :class="{ 'active': (tool.id == Number(selectedTool?.id) && tool.parent_id == Number(selectedTool?.parent_id) && tool.stepName == selectedTool?.stepName && tool.twoCategoryName == selectedTool?.twoCategoryName) }"
+                    :class="{ 'active': tool._uuid == selectedTool?._uuid }"
                     @click="handleToolClick(tool)"
                     @contextmenu.stop="handleToolRightClick(tool, $event)"
                     @dblclick="handleToolEvent('',tool)"
@@ -407,7 +400,7 @@ onMounted(() => {
                         class="docs-item" 
                         v-for="(item) in docsList" 
                         :key="item._uuid"
-                        :class="{ 'active': item.id == Number(selectedDoc?.id) }"
+                        :class="{ 'active': item._uuid == selectedDoc?._uuid }"
                         @click="handleDocItemClick(item)"
                         >
                         <div class="docs-item-icon">
