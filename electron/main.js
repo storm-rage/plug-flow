@@ -443,20 +443,14 @@ ipcMain.on('get-cookie-data',async (event,data)=> {
   let host = await getBladeUrl().arthub_service_url
   let api_cookies = await getBladeUrl().api_cookies
   let apiArr = api_cookies.split(';')
-    let target = []
-    apiArr.forEach(item => {
-      let obj = {
-          name: item.split('=')[0],
-          value: item.split('=')[1]
-        }
-      if(item.includes('arthub_account_ticket')) {
-        target.push(obj)
-      }else if(item.includes('accountName')) {
-        target.push(obj)
-      }else if(item.includes('mailAddress')) {
-        target.push(obj)
-      }
-    })
+  let target = []
+  const requiredCookies = ['arthub_account_ticket', 'accountName', 'mailAddress'];
+  apiArr.forEach(item => {
+    const [name, value] = item.trim().split('=');
+    if (name && value && requiredCookies.includes(name)) {
+      target.push({ name, value });
+    }
+  })
 
   let localCookie = await getLightboxCookies()
   if(localCookie) {
