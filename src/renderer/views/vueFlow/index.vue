@@ -410,7 +410,6 @@ async function handleLastNodeClick() {
         events: firstNode.events || {},
         class: 'selected',
       };
-      localStorage.setItem('currentNodeToolDoc', JSON.stringify(firstNode))
       handleNodeClick({
         node: completeNodeData,
         event: null
@@ -810,6 +809,7 @@ onMounted(() => {
     border-radius: 10px;
     padding: 34px 0 4px 24px;
     background-color: #313131;
+    z-index: 100;
   }
   .vue-flow__node-custom {
     background: #9CA8B3;
