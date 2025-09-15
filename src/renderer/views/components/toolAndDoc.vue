@@ -11,8 +11,7 @@ import ppt from '../../../assets/doc/ppt.png';
 import loadFailed from '../../../assets/doc/load_failed.png';
 import toolimg from '../../../assets/tool/toolimg.png';
 
-// import { toolApi }  from '../../../api/index';
-import { checkAppInstalled } from './tool';
+import { checkAppInstalled, generateUUID } from './tool';
 
 
 const props = defineProps(
@@ -34,24 +33,7 @@ function handleDocFold() {
         isShowDocModule.value = !isShowDocModule.value
     }
 }
-// const sortedDocs = computed(() => {
-//   const direction = optionSortDirections[docFilter.value] === 'asc' ? 1 : -1;
-  
-//   return [...docsList.value].sort((a, b) => {
-//     switch(docFilter.value) {
-//       case 'name':
-//         return a.docName.localeCompare(b.docName) * direction;
-//       case 'type':
-//         return a.docType.localeCompare(b.docType) * direction;
-//       case 'updateTime':
-//         const timeA = new Date(a.lastUpdateTime.replace(' ', 'T')).getTime();
-//         const timeB = new Date(b.lastUpdateTime.replace(' ', 'T')).getTime();
-//         return (timeA - timeB) * direction;
-//       default:
-//         return 0;
-//     }
-//   });
-// })
+
 function sortDocs() {
     //按名称、类型、更新时间排序
     let arr = [...docsList.value]
@@ -158,7 +140,6 @@ function handleToolRightClick(tool: any, event: any) {
   // 先关闭再打开，确保状态正确更新
   contextMenuVisible.value = false
   
-  // 使用 nextTick 确保 DOM 更新后再显示菜单
   nextTick(() => {
     contextMenuVisible.value = true
   })
@@ -284,20 +265,6 @@ function handleDocItemClick(item: any) {
 }
 let currentNode = JSON.parse(localStorage.getItem('currentNodeToolDoc') || '{}')
 
-// async function getStepTools() {
-//     return
-//     if(currentNode?.toolDocRows?.toolRows <= 0) return
-//     let obj = {
-//         "step_id": Number(currentNode.id),
-//     }
-//     await toolApi.getStepTools(obj).then((res: any) => {
-//         if (res.code == 0) {
-//             toolsList.splice(0, toolsList.length, ...(res.result?.items || []))
-//             isShowToolModule.value = res.result.items && res.result.items.length > 0
-//         }
-//     })
-// }
-
 let menuList: any = reactive([])
 
 
@@ -305,18 +272,15 @@ let docsPage = ref(1)
 let docsPageSize = ref(10)
 let hasMoreDocs = ref(true)
 let isLoadingDocs = ref(false)
-// const listCount = ref(3);
 const asyncLoadingRadio = ref('load-more');
 const loadMore: ListProps['onLoadMore'] = () => {
   asyncLoadingRadio.value = 'loading'
-  //请求更多的docs
-//   getStepDocs(true)
+  
   getDocs(true)
 
 };
 function handleListScroll() {
     popupVisible.value = false
-    console.log('handleListScroll==')
 
 }
 const asyncLoading = computed<ListProps['asyncLoading']>(() => {
@@ -332,15 +296,9 @@ function handleDocsScroll(event: Event) {
     const target = event.target as HTMLElement
     const { scrollTop, scrollHeight, clientHeight } = target
 
-    // if (docOptionRef.value && docOptionRef.value._.vnode.el) {
-    // }
-    
-
-
-    if (scrollHeight - scrollTop - clientHeight < 10) { // 提前10px触发
+    if (scrollHeight - scrollTop - clientHeight < 10) {
         if (hasMoreDocs.value && !isLoadingDocs.value && !isAutoLoading) {
             isAutoLoading = true // 设置自动加载标志
-            // getStepDocs(true)
             getDocs(true)
         }
     }
@@ -390,19 +348,20 @@ function getDocs(loadMore = false) {
 let currentTab = JSON.parse(localStorage.getItem('currentTab') || '')
 let showDetail = ref(false)
 onBeforeMount(() => { 
-    // getStepTools()
-    // getStepDocs()
     if(currentTab.id) {
         getTools()
         getDocs()
-        
     }
 })
 onMounted(()=>{
     (window as any).electronAPI.on('get-step-tools', (res:any) => { 
         if (res.code == 0) {
             console.log('<<<<<<<<<<<<<查询到工具列表===',res)
-            toolsList.splice(0, toolsList.length, ...(res.result?.items || []))
+            const toolsWithUUID = res.result.items.map((tool: any) => ({
+                        ...tool,
+                        _uuid: tool._uuid || generateUUID()
+                    }));
+            toolsList.splice(0, toolsList.length, ...(toolsWithUUID || []))
             isShowToolModule.value = res.result.items && res.result.items.length > 0
         }
     });
@@ -410,12 +369,14 @@ onMounted(()=>{
         (window as any).electronAPI.on('get-step-docs', (res:any) => { 
             try {
                 if (res.code == 0) {
-                                console.log('<<<<<<<<<<<<<查询到文档列表===',res)
-                    // 如果是加载更多，则追加数据；否则替换数据
+                    const docsWithUUID = res.result.record.map((doc: any) => ({
+                        ...doc,
+                        _uuid: doc._uuid || generateUUID()
+                    }));
                     if (docsList.value.length > 0 && docsPage.value > 1 ) {
-                        docsList.value.push(...(res.result?.record || []))
+                        docsList.value.push(...(docsWithUUID || []))
                     } else {
-                        docsList.value.splice(0, docsList.value.length, ...(res.result?.record || []))
+                        docsList.value.splice(0, docsList.value.length, ...(docsWithUUID || []))
                     }
                     console.log('<<<<<<<<<<<<<查询到文档列表===',res,docsList,docsPage.value)
                     
@@ -432,17 +393,17 @@ onMounted(()=>{
                 }
             } catch (error) {
                 console.error('获取文档数据失败:', error)
-                asyncLoadingRadio.value = 'load-more' // 出错时恢复到可加载状态
+                asyncLoadingRadio.value = 'load-more'
 
             } finally {
                 isLoadingDocs.value = false
-                isAutoLoading = false // 重置自动加载标志
+                isAutoLoading = false
                 sortDocs()
 
                 if (hasMoreDocs.value) {
-                    asyncLoadingRadio.value = 'load-more' // 还有更多数据可以加载
+                    asyncLoadingRadio.value = 'load-more'
                 } else {
-                    asyncLoadingRadio.value = 'loading-custom' // 没有更多数据了
+                    asyncLoadingRadio.value = 'loading-custom'
                 }
             }
         })
@@ -478,9 +439,9 @@ onMounted(()=>{
             <Transition name="slide">
                 <div class="tools" v-show="isShowToolModule && toolsList.length > 0">
                     <div class="tools-item" 
-                    :class="{ 'active': tool.id == Number(selectedTool?.id) }"
+                    :class="{ 'active': tool._uuid == selectedTool?._uuid }"
                         v-for="(tool) in toolsList" 
-                        :key="tool.id"
+                        :key="tool._uuid"
                         @click="handleToolClick(tool)"
                         @contextmenu="handleToolRightClick(tool, $event)"
                         @dblclick="handleToolEvent('run',tool)"
@@ -525,9 +486,9 @@ onMounted(()=>{
                          class="docs-list-scrollable">
                             <t-list-item 
                                 v-for="(item) in docsList" 
-                                :key="item.id"                                 
+                                :key="item._uuid"         
                                 @click="handleDocItemClick(item)"
-                                :class="{ 'active': item.id == Number(selectedDoc?.id) }"
+                                :class="{ 'active': item._uuid == selectedDoc?._uuid }"
                                 >
                                     <t-tooltip placement="bottom" :show-arrow="false"> 
                                         <template #content>

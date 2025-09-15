@@ -422,21 +422,7 @@ async function handleLastNodeClick() {
 }
 let currentTabStr = localStorage.getItem('currentTab')
 let currentTab = currentTabStr ? JSON.parse(currentTabStr) : null
-onBeforeMount(() => { 
-    if(currentTab) {
-      // getFlow(currentTab.id)
-      // let isPlugLocalConfig = localStorage.getItem('isPlugLocalConfig')
-      // let handleVersion = isPlugLocalConfig ? JSON.parse(isPlugLocalConfig) : null;
-      // if(handleVersion){
-      //   (window as any).electronAPI?.send('fetch-data',{
-      //     url: `/openapi/v1/core/plug/get-plugProcessStep?debug_version=${handleVersion ? 0 : 1}`,
-      //     data: {
-      //       categoryId: currentTab.id,
-      //     }
-      //   });
-      // }
-      
-    } 
+onBeforeMount(() => {  
   
 })
 
@@ -459,7 +445,6 @@ const throttledProcessData = throttle(async (res: any) => {
     handlePaneClick({} as MouseEvent);
     dragDistance.value = { x: 0, y: 0 };
     res.result.length > 0 && debounceLastNodeClick();
-    loading.value = false;
     isFetching.value = false;
     sessionStorage.setItem('isFlowLoaded', JSON.stringify(true))
 
@@ -574,9 +559,6 @@ function openDevTools() {
   // 通过 electronAPI 打开开发者工具
   if ((window as any).electronAPI?.send) {
     (window as any).electronAPI?.send('open-dev-tools')
-  } else {
-    // 备用方案：如果在浏览器环境中
-    console.log('Opening dev tools not supported in this environment')
   }
   hideContextMenu()
 }
@@ -596,8 +578,8 @@ onMounted(() => {
     document.removeEventListener('click', handleClickOutside)
   })
 })
-let loading = ref(true)
-let flowKey = ref(0)
+// let loading = ref(true)
+// let flowKey = ref(0)
 // function resetFlow() {
 //       nextTick(() => {    
 //             // flowKey.value++ 
@@ -608,7 +590,6 @@ let flowKey = ref(0)
 <template>
   <Transition name="slide">
   <VueFlow 
-  :key="flowKey"
     :nodes="nodes"
     :edges="edges"
     @pane-resize="onPaneResize"

@@ -23,12 +23,8 @@ function handleRefresh() {
 }
 
 onMounted(()=>{
-    (window as any).electronAPI.receive('window-maximized', () => {
+    (window as any).electronAPI.on('win-maximize', () => {
         isMaximized.value = true;
-    });
-    
-    (window as any).electronAPI.receive('window-unmaximized', () => {
-        isMaximized.value = false;
     });
     
 })

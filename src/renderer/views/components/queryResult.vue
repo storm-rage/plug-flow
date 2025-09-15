@@ -74,17 +74,17 @@ function handleDocItemClick(item: any) {
         window.open(item.url, '_blank')
     }
     return
-    handleDocPreview(item.url)
+    // handleDocPreview(item.url)
 }
 let docPreview = ref(false)
 let docPreviewDetail = ref<any>({
   url: '',
 })
-function handleDocPreview(url : string) {
-  console.log('回调文档信息 ===',url)
-  docPreviewDetail.value.url = url
-  docPreview.value = true
-}
+// function handleDocPreview(url : string) {
+//   console.log('回调文档信息 ===',url)
+//   docPreviewDetail.value.url = url
+//   docPreview.value = true
+// }
 let isElectron = (window as any)?.ElectronAPI?.isElectron
 const hasResults = computed(() => {
     return (toolsList.value.length + docsList.value.length) > 0
