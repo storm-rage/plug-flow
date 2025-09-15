@@ -36,18 +36,21 @@ function handleSelectChange() {
 }
 
 onMounted(() => { 
-    // (window as any).electronAPI.on('query-keyword', (data:any) => { 
-    //     console.log('renderer info',data)
-    //     // globalSearch(data)
-    //     getSearchResult(data)
-    // })
     document.addEventListener('click', handleClickOutside);
     if((window as any).electronAPI) {
         (window as any).electronAPI.on('global-search', (res:any) => { 
             if (res.code == 0) {
                 console.log('<<<<<<<<<<<<<查询到全局搜索的结果===',res)
-                toolsList.value.splice(0, toolsList.value.length, ...res.result.tools)
-                docsList.value.splice(0, docsList.value.length, ...(res.result.documents || []))
+                const toolsWithUUID = res.result.tools.map((tool: any) => ({
+                    ...tool,
+                    _uuid: tool._uuid || generateUUID()
+                }))
+                const docsWithUUID = res.result.documents.map((doc: any) => ({
+                    ...doc,
+                    _uuid: doc._uuid || generateUUID()
+                }));
+                toolsList.value.splice(0, toolsList.value.length, ...toolsWithUUID)
+                docsList.value.splice(0, docsList.value.length, ...docsWithUUID)
                 sortTools()
                 sortDocs()
                 loading.value = false
@@ -107,13 +110,15 @@ function sortTools() {
   const direction = optionSortDirections[keyword.value] === 'asc' ? 1 : -1
     toolsList.value.sort((a: any, b: any) => {
         if (keyword.value === 'name') {
-        return a.name.localeCompare(b.name) * direction
+            const nameComparison = a.name.localeCompare(b.name) * direction
+            return nameComparison !== 0 ? nameComparison : a._uuid.localeCompare(b._uuid)
         } else if (keyword.value === 'updateTime') {
-        const timeA = new Date(a.updated_date.replace(' ', 'T')).getTime()
-        const timeB = new Date(b.updated_date.replace(' ', 'T')).getTime()
-        return (timeA - timeB) * direction
+            const timeA = new Date(a.updated_date.replace(' ', 'T')).getTime()
+            const timeB = new Date(b.updated_date.replace(' ', 'T')).getTime()
+            const timeDifference = (timeA - timeB) * direction
+            return timeDifference !== 0 ? timeDifference : a._uuid.localeCompare(b._uuid)
         }
-        return 0
+        return a._uuid.localeCompare(b._uuid)
     })
 }
 function sortDocs() {
@@ -122,16 +127,26 @@ function sortDocs() {
         const direction = optionSortDirections[keyword.value] === 'asc' ? 1 : -1
         
         if (keyword.value === 'name') {
-            return a.docName.localeCompare(b.docName) * direction
+            const nameComparison = a.docName.localeCompare(b.docName) * direction
+            return nameComparison !== 0 ? nameComparison : a._uuid.localeCompare(b._uuid)
         } else if (keyword.value === 'type') {
-            return a.docType.localeCompare(b.docType) * direction
+            const typeComparison = a.docType.localeCompare(b.docType) * direction
+            return typeComparison !== 0 ? typeComparison : a._uuid.localeCompare(b._uuid)
         } else if (keyword.value === 'updateTime') {
             const timeA = new Date(a.lastUpdateTime.replace(' ', 'T')).getTime()
             const timeB = new Date(b.lastUpdateTime.replace(' ', 'T')).getTime()
-            return (timeA - timeB) * direction
+            const timeDifference = (timeA - timeB) * direction
+            return timeDifference !== 0 ? timeDifference : a._uuid.localeCompare(b._uuid)
         }
-        return 0
+        return a._uuid.localeCompare(b._uuid)
     })
+}
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0,
+              v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }
 let menuList: any = reactive([])
 
@@ -357,7 +372,7 @@ onMounted(() => {
                 <div 
                     class="tools-item" 
                     v-for="(tool) in toolsList" 
-                    :key="tool.id+tool.parent_id+tool.stepName+tool.twoCategoryName"
+                    :key="tool._uuid"
                     :class="{ 'active': (tool.id == Number(selectedTool?.id) && tool.parent_id == Number(selectedTool?.parent_id) && tool.stepName == selectedTool?.stepName && tool.twoCategoryName == selectedTool?.twoCategoryName) }"
                     @click="handleToolClick(tool)"
                     @contextmenu.stop="handleToolRightClick(tool, $event)"
@@ -391,7 +406,7 @@ onMounted(() => {
                     <div 
                         class="docs-item" 
                         v-for="(item) in docsList" 
-                        :key="item.id"
+                        :key="item._uuid"
                         :class="{ 'active': item.id == Number(selectedDoc?.id) }"
                         @click="handleDocItemClick(item)"
                         >

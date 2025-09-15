@@ -5,11 +5,15 @@ import ToolLogo from '../../../assets/tool-logo1.png';
 
 
 const title = ref('智链工坊');
+const isMaximized = ref(false);
+
 function handleMini() {
     (window as any).electronAPI.send('win-minimize')
 }
 function handleMax() {
     (window as any).electronAPI.send('win-maximize')
+        isMaximized.value = !isMaximized.value;
+
 }
 function handleClose() {
     (window as any).electronAPI.send('win-close')
@@ -19,6 +23,13 @@ function handleRefresh() {
 }
 
 onMounted(()=>{
+    (window as any).electronAPI.receive('window-maximized', () => {
+        isMaximized.value = true;
+    });
+    
+    (window as any).electronAPI.receive('window-unmaximized', () => {
+        isMaximized.value = false;
+    });
     
 })
 
@@ -41,7 +52,7 @@ onMounted(()=>{
                 <Icon name="minus" size="24px"/>
             </div>
             <div class="max" @click="handleMax">
-                <Icon name="rectangle" size="16px"/>
+                <Icon :name="isMaximized ? 'fullscreen-exit-1' : 'fullscreen-1'" size="20px"/>
             </div>
             <div class="close" @click="handleClose">
                  <Icon name="close" size="24px"/>
