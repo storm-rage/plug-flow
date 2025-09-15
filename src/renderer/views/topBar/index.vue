@@ -48,7 +48,8 @@ onMounted(()=>{
                 <Icon name="minus" size="24px"/>
             </div>
             <div class="max" @click="handleMax">
-                <Icon :name="isMaximized ? 'fullscreen-exit-1' : 'fullscreen-1'" size="20px"/>
+                <Icon name="rectangle" size="16px"/>
+                <!-- <Icon :name="isMaximized ? 'fullscreen-exit-1' : 'fullscreen-1'" size="20px"/> -->
             </div>
             <div class="close" @click="handleClose">
                  <Icon name="close" size="24px"/>

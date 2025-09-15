@@ -29,12 +29,11 @@ export function createMainWindow() {
     menu: null
   })
   const indexPath = path.join(__dirname, '..','..','dist','index.html')
-  // const indexPath = path.join(app.getAppPath(), 'dist', 'index.html');
   console.log('Index path:', indexPath);
   console.log('File exists:', fs.existsSync(indexPath));
-  // mainWindow.loadFile(indexPath)
   if (fs.existsSync(indexPath)) {
-    mainWindow.loadURL(`file://${indexPath}`)
+    // mainWindow.loadURL(`file://${indexPath}`)
+      mainWindow.loadURL('http://localhost:5173') // vite dev 默认端口
     // mainWindow.loadFile(indexPath)//生产环境
   } else {
     console.error('Index file not found');
@@ -81,7 +80,6 @@ export function createMainWindow() {
   //   return false
   // })
 
-  // return mainWindow
   const window = BrowserWindow.getFocusedWindow();
 
   ipcMain.on('win-minimize',(event,data)=> { 
