@@ -2,6 +2,7 @@
 import { onBeforeMount, reactive, ref, computed, onMounted } from "vue";
 import { SearchIcon } from 'tdesign-icons-vue-next';
 import Peace from '../../assets/peace.png';
+import PhotonLogo from '../../assets/photon-logo1.png';
 import TopBar from "./topBar/index.vue"
 import type { InputProps } from 'tdesign-vue-next';
 // import { toolApi }  from '../../api/index'
@@ -143,7 +144,7 @@ const debouncedTabsClick = debounce((tab:any,index:any) => {
   if (selectedTab) {
     activeTab.value = index
   }
-}, 1000);
+}, 10);
 function handleTabsClick(tab:any,index:any) {
   debouncedTabsClick(tab,index)
 }
@@ -401,11 +402,25 @@ let loading = ref(true)
       <div class="contact-person" v-if="isShowSubTab">
         接口人：<span>{{ `${contactPerson}` }}</span>
       </div>
+      <div class="photon-logo">
+        <img :src="PhotonLogo" alt="logo"></img>
+      </div>
     </div>
 </div>
   
 </template>
 <style scoped lang="less">
+.photon-logo {
+    bottom: -50px;
+    pointer-events: none;
+    position: fixed;
+    right: -50px;
+    z-index: 99;
+    img {
+      opacity: .15;
+      width: 400px;
+    }
+}
 .main {
   position: relative;
   top: 52px;
