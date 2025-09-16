@@ -433,6 +433,7 @@ const throttledProcessData = throttle(async (res: any) => {
     if(res.result.length > 0) { 
       setTimeout(() => {
         formatNodeData(res.result);
+        isShowFlow.value = true;
       }, 0);
     } else {
       dialogVisible.value = false;
@@ -587,8 +588,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <Transition name="slide">
+  <Transition name="vue-flow-transition" mode="out-in">
   <VueFlow 
+  v-if="isShowFlow"
     :nodes="nodes"
     :edges="edges"
     @pane-resize="onPaneResize"
@@ -945,5 +947,17 @@ onMounted(() => {
 
 .vue-flow-enter-from, .vue-flow-leave-to {
   opacity: 0;
+}
+.vue-flow-transition-enter-active,
+.vue-flow-transition-leave-active {
+  transition: opacity 0.5s;
+}
+.vue-flow-transition-enter-from,
+.vue-flow-transition-leave-to {
+  opacity: 0;
+}
+.vue-flow-transition-enter-to,
+.vue-flow-transition-leave-from {
+  opacity: 1;
 }
 </style>
