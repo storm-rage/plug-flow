@@ -5,7 +5,6 @@ import Peace from '../../assets/peace.png';
 import PhotonLogo from '../../assets/photon-logo1.png';
 import TopBar from "./topBar/index.vue"
 import type { InputProps } from 'tdesign-vue-next';
-// import { toolApi }  from '../../api/index'
 import { useRouter } from 'vue-router'
 import { debounce } from "lodash";
 
@@ -111,12 +110,7 @@ const debounceSendQuery = debounce((tabId: any) => {
 
 let isTabClick = ref(false)
 const debouncedTabsClick = debounce((tab:any,index:any) => { 
-  //需要等到画布更新完毕，再请求新数据
-  // let isFlowLoaded = sessionStorage.getItem('isFlowLoaded')
-  // if(isFlowLoaded) {
-  //   if(JSON.parse(isFlowLoaded) !== true)
-  //     return
-  // }
+  
   if(!tab.id) {
     return
   }
@@ -314,11 +308,6 @@ onMounted(() => {
               }
             }else {
               if(i.child.length > 0) {
-                // activeTabTop.value = index
-                // tabs.splice(0, tabs.length, ...i.child)
-                // localStorage.setItem('currentTab', JSON.stringify(i.child[0]))
-                // categoryId = i.child[0].id
-                // contactPerson.value = i.child[0].contactPerson
                 activeTabTop.value = 0
                 tabs.splice(0, tabs.length, ...res.result[0].child)
                 localStorage.setItem('currentTab', JSON.stringify(res.result[0].child[0]))
