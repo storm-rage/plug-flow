@@ -755,7 +755,7 @@ onMounted(()=>{
         .doc {
             transition: transform 0.3s ease-in-out;
             &.doc-shifted {
-                transform: translateY(20px);
+                transform: translateY(32px);
             }
         }
     }

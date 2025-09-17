@@ -255,7 +255,6 @@ async function requestWithNet(params, fileBuffer = null, filename = null, isUplo
   let formatCookie = cookieArr.filter(item => item.includes("arthub_account_ticket"||"accountName"||"mailAddress")).join(';')
   const urlObj = new URL(host).hostname;
   console.log('host====',host,urlObj)
-  console.log('formatCookie====',formatCookie)
   const cookieString = cookies
       .filter(cookie => ["arthub_account_ticket", "accountName", "mailAddress"].includes(cookie.name))
       .map(cookie => `${cookie.name}=${cookie.value}`)
@@ -439,7 +438,6 @@ ipcMain.on('fetch-data', (event,data) => {
     fetchData(data)
 })
 ipcMain.on('get-cookie-data',async (event,data)=> {
-  console.log('get-cookie-data mainjs')
   let host = await getBladeUrl().arthub_service_url
   let api_cookies = await getBladeUrl().api_cookies
   let apiArr = api_cookies.split(';')

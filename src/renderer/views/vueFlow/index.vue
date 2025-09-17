@@ -319,11 +319,9 @@ async function formatNodeData(result: any[]) {
     //处理每个流程的连线
     autoGenerateEdge(item)
   })
-  // setNodes([])
-  // setEdges([])
+  
   await nextTick()
-  // setNodes(newNodes)
-  // setEdges(edges.value)
+  
   addNodes(nodes.value)
   await nextTick()
   addEdges(edges.value)
@@ -616,9 +614,7 @@ onMounted(() => {
     <template #edge-special="specialEdgeProps">
       <SpecialEdge v-bind="specialEdgeProps" />
     </template>
-    <Background 
-      :bgColor="'red'"
-    />
+    
   </VueFlow></Transition>
   <teleport to="body">
     <div 
@@ -644,7 +640,7 @@ onMounted(() => {
   </teleport>
   <div class="node-tool-doc"
       ref="nodeToolDocRef"
-      :style="{ left: currentNodeToolDoc.position.x+dragDistance.x*2 + 'px', top: currentNodeToolDoc.position.y+dragDistance.y*2 + 80 + 'px' }"
+      :style="{ left: currentNodeToolDoc.position.x+dragDistance.x*2 + 'px', top: currentNodeToolDoc.position.y+dragDistance.y*2 + 90 + 'px' }"
       v-if="dialogVisible && (currentNodeToolDoc?.toolDocRows?.docRows > 0 || currentNodeToolDoc?.toolDocRows?.toolRows > 0)"
       >
       <div class="tool-box">
