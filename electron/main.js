@@ -437,6 +437,7 @@ async function fetchData(params) {
 ipcMain.on('fetch-data', (event,data) => {
     fetchData(data)
 })
+let globalCookieData = null;
 ipcMain.on('get-cookie-data',async (event,data)=> {
   let host = await getBladeUrl().arthub_service_url
   let api_cookies = await getBladeUrl().api_cookies
@@ -452,7 +453,6 @@ ipcMain.on('get-cookie-data',async (event,data)=> {
 
   let localCookie = await getLightboxCookies()
   if(localCookie) {
-      mainWindow.webContents.send('get-cookie-data', localCookie);
       console.log('host =',host)
       let cookies = []
       if(target.length){
@@ -464,6 +464,8 @@ ipcMain.on('get-cookie-data',async (event,data)=> {
           }
         }
       }
+      globalCookieData = cookies
+      mainWindow.webContents.send('get-cookie-data', cookies)
 
       cookies.length && cookies.forEach(cookieName => {
               if (['arthub_account_ticket', 'accountName','mailAddress'].includes(cookieName.name)) {

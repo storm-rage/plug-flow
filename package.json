@@ -12,6 +12,7 @@
   "main": "./electron/main.js",
   "dependencies": {
     "@vue-flow/core": "^1.45.0",
+    "aegis-web-sdk": "^1.41.3",
     "axios": "^1.11.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",

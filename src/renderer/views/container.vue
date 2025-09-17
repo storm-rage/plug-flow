@@ -7,6 +7,7 @@ import TopBar from "./topBar/index.vue"
 import type { InputProps } from 'tdesign-vue-next';
 import { useRouter } from 'vue-router'
 import { debounce } from "lodash";
+import Aegis from 'aegis-web-sdk';
 
 
 const electronAPI = (window as any).electronAPI;
@@ -192,9 +193,12 @@ const onClear: InputProps['onClear'] = () => {
   console.log('clear');
 };
 let contactPerson = ref('')
+let userInfo = ref([])
 onBeforeMount(() => { 
   (window as any).electronAPI?.on('get-cookie-data',(res:any) => { 
+    userInfo.value = res
     console.log('<<<<< get-cookie-data==',res)
+    initReporting({})
   });
   if((window as any).electronAPI) {
     (window as any).electronAPI.on('file-parsing-completed', (res:any) => { 
@@ -336,6 +340,60 @@ onMounted(() => {
     
 })
 let loading = ref(true)
+async function initReporting ({}) {
+  try {
+    let user = {};
+    try {
+      user = (window as any).electronAPI?.getUserInfo?.() || {};
+    } catch (e) {
+      console.warn('Failed to get user info:', e);
+    }
+
+    // 获取全局变量信息（适配 Vue3 Composition API）
+    const globalData = (window as any).$global || (window as any).globalData || {};
+    const appName = (window as any).appName || 'plug-flow';
+    const version = globalData.desktopCenter?.version || '1.0.0';
+
+    const url = 'https://galileotelemetry.tencent.com/collect'; // 伽利略上报地址，不变
+    const id = 'SDK-97007142ac36659869b9'; // 插板id
+    console.log('AegisV2 init', id, user, globalData, appName, version, userInfo.value);
+    // let mailAddress = userInfo.value.find(i => i.name == 'mailAddress')
+    let mail = '';
+    userInfo.value.forEach((item: any) => {
+      if(item.name == 'mailAddress') {
+        mail = item.value
+      }
+    });
+    // 初始化 Aegis 实例
+    (window as any).AegisV2 = new Aegis({
+      id, // 项目token，即上报伽利略监控的唯一标识
+      uid: mail || 'unknown', // 用户邮箱
+      hostUrl: url ,
+      // 自定义扩展字段
+      extField: {
+        app_version: version,
+        app_name: appName,
+      },
+      beforeReport(event:any) {
+        if (event.msg?.includes('"isTrusted":true')) {
+          // 过滤掉无意义的 Promise Error
+          return false;
+        }
+        return true;
+      },
+      plugin: {
+        device: true,  // 设备信息收集
+        error: true,   // 错误监控
+        pv: true,      // 页面访问统计
+        performance: true, // 性能监控
+      },
+    });
+
+    console.log('AegisV2 initialized successfully');
+  } catch (error) {
+    console.error('Aegis initialization failed:', error);
+  }
+}
 
 </script>
 <template>
