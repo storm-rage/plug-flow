@@ -950,11 +950,11 @@ onMounted(() => {
 }
 .vue-flow-transition-enter-from {
   opacity: 0;
-  transform: translateX(100px);
+  transform: translateX(300px);
 }
 .vue-flow-transition-leave-to {
   opacity: 0;
-  transform: translateX(-100px);
+  transform: translateX(-300px);
 }
 .vue-flow-transition-enter-to,
 .vue-flow-transition-leave-from {

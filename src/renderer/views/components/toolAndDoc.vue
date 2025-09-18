@@ -511,6 +511,7 @@ onMounted(()=>{
                                                 <div class="docs-item-title">{{ item.docName }}</div>
                                                 <div class="docs-item-desc">{{ item.remark }}</div>
                                             </div>
+                                            <div class="doc-item-charge-person">{{ item.chargePerson }}</div>
                                         </div>
                                     </t-tooltip>
                                     
@@ -564,63 +565,7 @@ onMounted(()=>{
         
     </div>
     </div>
-    <!-- <t-dialog 
-        v-model:visible="showDetail" 
-        header="工具详情" 
-        width="60%" 
-        class="custome-dialog"
-        :footer="false" 
-        >
-      <div class="detail-cont">
-        <div class="tool-icon">
-            <div class="icon-tip">图标</div>
-            <div class="icon">
-                <t-image
-                    :src="`https://${selectedTool?.icon_url}`"
-                    :style="{ width: '120px', height: '120px' }"
-                />
-            </div>
-        </div>
-        <div class="tool-info">
-            <div class="tool-info-item">
-                <div class="info-title">名称：</div>
-                <div class="info-des">{{ selectedTool.name }}</div>
-            </div>
-            <div class="tool-info-item">
-                <div class="info-title">分类：</div>
-                <div class="info-des">{{ `${selectedTool.twoCategoryName} / ${selectedTool.stepName}` }}</div>
-            </div>
-            <div class="tool-info-item">
-                <div class="info-title">旗标：</div>
-                <div class="info-des">{{ selectedTool.flag_content || '无' }}</div>
-            </div>
-            <div class="tool-info-item">
-                <div class="info-title">标签：</div>
-                <div class="info-des">
-                    <t-tag>{{ selectedTool.label[0] || '无' }}</t-tag>
-                </div>
-            </div>
-            <div class="tool-info-item">
-                <div class="info-title">应用简介：</div>
-                <div class="info-des">{{ selectedTool.description }}</div>
-            </div>
-            <div class="line"></div>
-            <div class="tool-info-item">
-                <div class="info-title">创建者：</div>
-                <div class="info-des">{{ selectedTool.creator }}</div>
-            </div>
-            <div class="tool-info-item">
-                <div class="info-title">创建时间：</div>
-                <div class="info-des">{{ selectedTool.created_date }}</div>
-            </div>
-            <div class="tool-info-item">
-                <div class="info-title">更新时间：</div>
-                <div class="info-des">{{ selectedTool.updated_date }}</div>
-            </div>
-
-        </div>
-      </div>
-    </t-dialog> -->
+    
     <teleport to="body">
         <div 
             v-if="contextMenuVisible"
@@ -852,6 +797,10 @@ onMounted(()=>{
             height: 36px;
         }
     }
+    .doc-item-charge-person {
+        width: 100px;
+        margin-left: 20px;
+    }
     .docs-item-cont { 
         flex: 1;
         text-align: left;
@@ -916,6 +865,7 @@ onMounted(()=>{
     .docs-item-cont {
         text-align: left;
         width: calc(100% - 60px);
+        max-width: 320px;
         .docs-item-title {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);

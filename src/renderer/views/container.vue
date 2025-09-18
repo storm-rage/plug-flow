@@ -412,6 +412,7 @@ function openWorkWechatContact() {
     
     // 发送 IPC 消息到主进程
     electronAPI?.send('open-work-wechat-contact', contactInfo);
+    console.log('发送打开企业微信请求成功', contactInfo);
   } catch (error) {
     console.error('发送打开企业微信请求失败:', error);
   }
