@@ -606,12 +606,25 @@ function openWorkWechatContact() {
 }
 :deep(.t-dialog__body) {
   color: #ababab;
+  border-top: 1px solid rgba(255, 255, 255, .05);
+  margin-top: 20px
 }
 :deep(.t-dialog__header .t-dialog__header-content) {
     color: #ababab;
 }
 :deep(.t-dialog__close) {
     color: #ababab;
+}
+:deep(.t-dialog__header .t-dialog__header-content) {
+  display: block!important;
+  padding-left: 24px!important;
+}
+:deep(.t-dialog__footer) {
+  text-align: center!important;
+}
+:deep(.t-button--variant-base.t-button--theme-primary) {
+  background-color: #3489F6;
+  border-color: #3489F6;
 }
 
 </style>

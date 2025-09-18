@@ -425,11 +425,11 @@ async function fetchData(params) {
   } catch (error) {
     mainWindow.webContents.send('request-failed', {'error':error,'url':params.url});
     console.error('Net request failed:', error);
-    dialog.showMessageBox({
-      type: 'error',
-      title: '提示',
-      message: `${params.url}请求失败，请检查登录信息是否正确后再行尝试！`
-    });
+    // dialog.showMessageBox({
+    //   type: 'error',
+    //   title: '提示',
+    //   message: `${params.url}请求失败，请检查登录信息是否正确后再行尝试！`
+    // });
 
   }
 }

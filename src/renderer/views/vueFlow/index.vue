@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, onBeforeMount, nextTick } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, onBeforeMount, nextTick, computed } from 'vue'
 import type { Node, Edge, Connection, EdgeUpdateEvent } from '@vue-flow/core'  
 import { VueFlow, useVueFlow, Position, MarkerType  } from '@vue-flow/core'
-// import { toolApi }  from '../../../api/index'
 import toolimg from '../../../assets/tool/toolimg.png';
+import error from '../../../assets/svg/error.svg'
 import CustomNode from '../components/customNode.vue'
 import SpecialNode from '../components/specialNode.vue'
 import SpecialEdge from '../components/specialEdge.vue'
@@ -575,14 +575,22 @@ onMounted(() => {
   onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
   })
+  if((window as any).electronAPI.on) {
+    (window as any).electronAPI.on('request-failed',(res:any) => {
+      console.error('request-failed',res)
+      isShowErrorDialog.value = true
+      errorInfo.value = res
+    });
+  }
 })
-// let loading = ref(true)
-// let flowKey = ref(0)
-// function resetFlow() {
-//       nextTick(() => {    
-//             // flowKey.value++ 
-//       })
-//     }
+let isShowErrorDialog = ref(false)
+let errorInfo = ref({
+  name:'',
+  url:''
+})
+let errorDialogTop = computed(() => { 
+  return (window.innerHeight - 245) / 2
+})
 </script>
 
 <template>
@@ -714,6 +722,26 @@ onMounted(() => {
         </div>
       </div>
     </t-dialog>
+    <t-dialog 
+        v-model:visible="isShowErrorDialog" 
+        header="提示" 
+        width="500px"
+        :top="errorDialogTop"
+        class="custome-dialog"
+        :confirmBtn="{ 
+          content: '确定', 
+          }"
+        alignment="center"
+        :cancelBtn="null"
+        @confirm="() => { isShowErrorDialog = false }"
+        >
+        <div class="error-dialog">
+          <div class="error-content">
+            <img :src="error" alt="error" class="error-icon" />
+            {{errorInfo?.url}}
+            请求失败，请检查登录信息是否正确后再行尝试！</div>
+        </div>
+      </t-dialog>
   <t-drawer v-model:visible="docPreview" placement="right" size="80%" :footer="false"
             @close="closeDrawer"
   >
@@ -924,7 +952,18 @@ onMounted(() => {
     }
   }
 }
-
+.error-content {
+  display: flex;
+  line-height: 28px;
+  .error-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    filter: drop-shadow(24px 0 0 #ff4d4f);
+    transform: translateX(-26px);
+  }
+}
 .context-menu-overlay {
   position: fixed;
   top: 0;
