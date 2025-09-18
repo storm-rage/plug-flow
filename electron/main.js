@@ -1,5 +1,5 @@
 import path from 'path'
-import { app, BrowserWindow, protocol, Tray, Menu, ipcMain, session, net, dialog } from 'electron';
+import { app, BrowserWindow, protocol, Tray, Menu, ipcMain, session, net, dialog, shell } from 'electron';
 import fs from 'fs';
 import toml from 'toml';
 import yaml from 'js-yaml'
@@ -629,5 +629,61 @@ function isGetFileData() {
   }, 5000)
 
 }
+
+ipcMain.on('open-work-wechat-contact', async (event, contactInfo) => {
+  try {
+    let success = false;
+    let errorMessages = [];
+    if (contactInfo.name) {
+      try {
+        const encodedName = encodeURIComponent(contactInfo.name)
+        // 企业微信用户邮箱方式打开
+        const wechatUrl = `wxwork://message/?username=${encodedName}`;
+        // const wechatUrl = `wxwork://message/?userid=${contactInfo.userId}`;
+        const result = await shell.openExternal(wechatUrl);
+        if (result) {
+          success = true;
+          console.log('成功打开企业微信');
+        } else {
+          errorMessages.push('打开企业微信失败');
+        }
+      } catch (error) {
+        errorMessages.push(`用户ID方式失败: ${error.message}`);
+      }
+    }
+
+    if (!success) {
+      try {
+        // 尝试打开企业微信主程序
+        const wechatUrl = 'wxwork://';
+        const result = await shell.openExternal(wechatUrl);
+        if (result) {
+          success = true;
+          console.log('成功打开企业微信主程序');
+        } else {
+          errorMessages.push('打开企业微信主程序失败');
+        }
+      } catch (error) {
+        errorMessages.push(`打开企业微信主程序失败: ${error.message}`);
+      }
+    }
+  } catch (error) {
+    console.error('打开企业微信失败:', error);
+    
+    // 备用方案：打开企业微信官网或提示用户
+    try {
+      await shell.openExternal('https://work.weixin.qq.com/');
+    } catch (fallbackError) {
+      console.error('打开备用链接失败:', fallbackError);
+      // 可以在这里显示错误提示给用户
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send('open-wechat-failed', {
+          error: error.message,
+          contact: contactInfo
+        });
+      }
+    }
+  }
+});
 
 export { protocolConfig }

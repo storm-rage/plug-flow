@@ -337,6 +337,11 @@ onMounted(() => {
   electronAPI.on('request-host',(res:any) => {
     console.log('request-host ',res)
   });
+  electronAPI?.on('open-wechat-failed', (res: any) => {
+    console.log('打开企业微信失败:', res);
+    // 可以在这里显示提示信息给用户
+    alert(`无法打开企业微信，请手动联系: ${res.contact.name}`);
+  });
     
 })
 let loading = ref(true)
@@ -394,6 +399,23 @@ async function initReporting ({}) {
     console.error('Aegis initialization failed:', error);
   }
 }
+function openWorkWechatContact() {
+  if (!contactPerson.value) return;
+  try {
+    // 构造联系人信息对象
+    const contactInfo = {
+      name: contactPerson.value.split('：')[1],
+      email: '', // 如果有邮箱信息可以添加
+      userId: '', // 如果有企业微信用户ID可以添加
+      kfId: '' // 如果有客服ID可以添加
+    };
+    
+    // 发送 IPC 消息到主进程
+    electronAPI?.send('open-work-wechat-contact', contactInfo);
+  } catch (error) {
+    console.error('发送打开企业微信请求失败:', error);
+  }
+}
 
 </script>
 <template>
@@ -447,7 +469,10 @@ async function initReporting ({}) {
       />
       <router-view />
       <div class="contact-person" v-if="isShowSubTab">
-        接口人：<span>{{ `${contactPerson}` }}</span>
+        接口人：<span
+        class="contact-link"
+        @click="openWorkWechatContact"
+        >{{ `${contactPerson}` }}</span>
       </div>
       <div class="photon-logo">
         <img :src="PhotonLogo" alt="logo"></img>
@@ -547,11 +572,15 @@ async function initReporting ({}) {
     position: absolute;
     right: 10px;
     bottom: 10px;
-    span {
+    .contact-link {
       font-size: 16px;
       text-decoration: underline;
       color: rgba(45, 120, 216, 0.80);
       line-height: 24px;
+      cursor: pointer;
+      &:hover {
+        color: rgba(45, 120, 216, 1);
+      }
     }
   }
 }
