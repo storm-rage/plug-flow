@@ -946,14 +946,19 @@ onMounted(() => {
 }
 .vue-flow-transition-enter-active,
 .vue-flow-transition-leave-active {
-  transition: opacity 0.5s;
+  transition: all 0.5s ease;
 }
-.vue-flow-transition-enter-from,
+.vue-flow-transition-enter-from {
+  opacity: 0;
+  transform: translateX(100px);
+}
 .vue-flow-transition-leave-to {
   opacity: 0;
+  transform: translateX(-100px);
 }
 .vue-flow-transition-enter-to,
 .vue-flow-transition-leave-from {
   opacity: 1;
+  transform: translateX(0)
 }
 </style>
