@@ -267,7 +267,61 @@ function handleEdgeUpdate(event: EdgeUpdateEvent) {
     }
   }
 }
+function handleNodeMaxDistance(nodes: Node[]) {
+  let maxY:any = null
+  let minY:any = null
+  nodes.forEach(item => {
+    if (maxY === null || item.position.y > maxY) {
+      maxY = item.position.y
+    }
+    if (minY === null || item.position.y < minY) {
+      minY = item.position.y
+    }
+  })
+  return { maxY, minY }
+}
+function handleNodePosition(nodes: Node[]) { 
+  let maxDistance = handleNodeMaxDistance(nodes)
+  let { maxY, minY} = maxDistance
+  let middleY = (maxY + minY) / 2
 
+
+  const xGroups: Record<number, Node[]> = {}
+  nodes.forEach(node => {
+    const x = node.position.x
+    if (!xGroups[x]) {
+      xGroups[x] = []
+    }
+    xGroups[x].push(node)
+  })
+
+  // 处理每个x组的节点
+  Object.values(xGroups).forEach(groupNodes => {
+    // 如果该x值只有一个节点，直接将其y设置为中轴线
+    if (groupNodes.length === 1) {
+      groupNodes[0].position.y = middleY
+    } 
+    // 如果该x值有多个节点，让它们相对于中轴线对称分布
+    else {
+      // 找到当前组的最小和最大y值
+      const groupMinY = Math.min(...groupNodes.map(node => node.position.y))
+      const groupMaxY = Math.max(...groupNodes.map(node => node.position.y))
+      
+      // 计算当前组的中心点
+      const groupCenterY = (groupMinY + groupMaxY) / 2
+      
+      // 计算偏移量，使组中心对齐到整体中轴线
+      const offset = middleY - groupCenterY
+      
+      // 更新每个节点的位置
+      groupNodes.forEach(node => {
+        node.position.y += offset
+      })
+    }
+  })
+
+  return nodes
+}
 
 //格式化节点数据
 async function formatNodeData(result: any[]) {
@@ -319,10 +373,11 @@ async function formatNodeData(result: any[]) {
     //处理每个流程的连线
     autoGenerateEdge(item)
   })
+  let handleNodes = handleNodePosition(nodes.value)
   
   await nextTick()
   
-  addNodes(nodes.value)
+  addNodes(handleNodes)
   await nextTick()
   addEdges(edges.value)
 }
@@ -989,11 +1044,11 @@ let errorDialogTop = computed(() => {
 }
 .vue-flow-transition-enter-from {
   opacity: 0;
-  transform: translateX(300px);
+  transform: translateX(600px);
 }
 .vue-flow-transition-leave-to {
   opacity: 0;
-  transform: translateX(-300px);
+  transform: translateX(-600px);
 }
 .vue-flow-transition-enter-to,
 .vue-flow-transition-leave-from {
