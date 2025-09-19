@@ -404,11 +404,7 @@ async function fetchData(params) {
       });
      }
      if(data && data.code !== 0) {
-      dialog.showMessageBox({
-        type: 'error',
-        title: '提示',
-        message: data.error
-      });
+      mainWindow.webContents.send('request-failed', {'error':data.error,'url':params.url});
      }
     let { url } = params
     if (url.includes('/openapi/v1/core/plug/get-plugProcessStep')) {

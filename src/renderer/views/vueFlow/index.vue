@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, onBeforeMount, nextTick, computed } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, onBeforeMount, nextTick, computed, watch } from 'vue'
 import type { Node, Edge, Connection, EdgeUpdateEvent } from '@vue-flow/core'  
 import { VueFlow, useVueFlow, Position, MarkerType  } from '@vue-flow/core'
 import toolimg from '../../../assets/tool/toolimg.png';
@@ -322,25 +322,33 @@ function handleNodePosition(nodes: Node[]) {
 
   return nodes
 }
-
+let stepFlow = ref([{
+  process_id: '',
+  process_name: '',
+}])
 //格式化节点数据
 async function formatNodeData(result: any[]) {
   let maxBottomY = 0
   nodes.value = []
   edges.value = []
-  const newNodes: Node[] = []
-  // const newEdges: Edge[] = []
+  
+  stepFlow.value = result.map(item => ({
+    process_id: item.process_id,
+    process_name: item.process_name
+  }))
+  console.log('stepFlow ',stepFlow.value )
 
   result.forEach((item: any, index: number) => { 
     //每一个流程
     const flowBaseY = index === 0 ? 60 : maxBottomY + 150 - 70
+    
     
     item.step_data.length && item.step_data.forEach((stepItem:any, stepIndex: number) => {
       //每一个流程节点
 
       let disInstanceX = 160 + 40
       
-      const nodeY = flowBaseY + (stepItem.y + 1) * 70
+      const nodeY = flowBaseY + (stepItem.y + 1) * 90
       let obj = {
         id: stepItem.id,
         type: 'custom',
@@ -366,7 +374,6 @@ async function formatNodeData(result: any[]) {
       }
 
       nodes.value.push((obj as any))
-      newNodes.push(obj as Node)
 
       maxBottomY = Math.max(maxBottomY, nodeY)
     })
@@ -646,6 +653,36 @@ let errorInfo = ref({
 let errorDialogTop = computed(() => { 
   return (window.innerHeight - 245) / 2
 })
+
+const activeStepIndex = ref(0)
+const activeStepOffsetX = ref(0)
+const activeStepItemWidth = ref(0)
+function handleStepFlowClick(item:any,index:any) {
+  console.log('step-flow-click', item, index)
+  activeStepIndex.value = index
+  updateActiveStepPosition(index)
+}
+async function updateActiveStepPosition(index: number) {
+  await nextTick()
+  const stepItems = document.querySelectorAll('.step-flow-item')
+  if (stepItems[index]) {
+    const item = stepItems[index] as HTMLElement
+    activeStepOffsetX.value = item.offsetLeft
+    activeStepItemWidth.value = item.offsetWidth
+  }
+}
+watch(stepFlow, () => {
+  updateActiveStepPosition(activeStepIndex.value)
+})
+
+onMounted(() => {
+  // 初始化背景位置
+  setTimeout(() => {
+    updateActiveStepPosition(0)
+  }, 0)
+})
+
+
 </script>
 
 <template>
@@ -814,6 +851,29 @@ let errorDialogTop = computed(() => {
         style="width:100%;height:100%;border:none;"
       ></iframe>
   </t-drawer>
+  <div class="setp-box-bg" v-if="stepFlow.length > 1">
+    <div class="setp-box">
+      <div class="step-flow">
+          <div class="step-flow-item" 
+          v-for="(item,index) in stepFlow" 
+          :key="index"
+          @click="handleStepFlowClick(item,index)"
+          :class="{ 'active': activeStepIndex === index }"
+          >
+            <div class="step-flow-item-icon">
+            </div>
+            <div class="step-flow-item-title">{{item.process_name}}</div>
+          </div>
+      </div>
+      <div class="step-flow-bg" :style="{ 
+              width: `${activeStepItemWidth}px`, 
+              transform: `translateX(${activeStepOffsetX}px)`,
+              transition: 'all 0.3s ease'
+            }"></div>
+    </div>
+  </div>
+  
+  
 </template>
 
 <style>
@@ -872,9 +932,9 @@ let errorDialogTop = computed(() => {
       }
   }
   
-  .active {
-      background: linear-gradient(107deg, #62ACEC 0%, #3489F6 42.73%, #7E27FF 99.87%);
-  }
+  // .active {
+  //     background: linear-gradient(107deg, #62ACEC 0%, #3489F6 42.73%, #7E27FF 99.87%);
+  // }
   :deep(.vue-flow__node-input.selected, .vue-flow__node-input:focus, .vue-flow__node-input:focus-visible) {
     background: linear-gradient(107deg, #62ACEC 0%, #3489F6 42.73%, #7E27FF 99.87%);
   }
@@ -1026,6 +1086,51 @@ let errorDialogTop = computed(() => {
   width: 100%;
   height: 100%;
   z-index: 9998;
+}
+.setp-box-bg {
+    position: absolute;
+    left: 50%;
+    top: 48px;
+    transform: translateX(-50%);
+    height: 40px;
+    background: linear-gradient(107deg,#62acec,#3489f6 42.73%,#7e27ff 99.87%);
+      padding: 2px;
+      border-radius: 54px;
+}
+.setp-box {
+    height: 40px;
+    background: #000;
+    border-radius: 50px;
+}
+.step-flow {
+  display: flex;
+  position: relative;
+  z-index: 100;
+  height: 100%;
+  .step-flow-item {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 101;
+    padding: 8px 16px;
+    border-radius: 50px;
+    &.active {
+      color: white;
+      font-weight: bold;
+    }
+  }
+}
+.step-flow-bg {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(107deg, #62acec, #3489f6 42.73%, #7e27ff 99.87%);
+  z-index: 90;
+  border-radius: 50px;
+  top: 0;
+  left: 0;
+  padding: 0 2px;
 }
 :deep(.vue-flow) {
   transition: opacity 0.2s ease;
