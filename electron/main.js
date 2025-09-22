@@ -148,8 +148,13 @@ app.whenReady().then(async() => {
   mainWindow.webContents.on('did-finish-load', () => {
     const THM_LOCAL_DATA_PATH = process.env.THM_LOCAL_DATA_PATH;
     const BLADE_DESKTOP_NAME = process.env.BLADE_DESKTOP_NAME;
+    const SPACE_INFO = process.env.SPACE_INFO;
     console.log('THM_LOCAL_DATA_PATH===',THM_LOCAL_DATA_PATH)
-    mainWindow.webContents.send('get-local-data', {path: THM_LOCAL_DATA_PATH, name: BLADE_DESKTOP_NAME || ''})
+    mainWindow.webContents.send('get-local-data', {
+      path: THM_LOCAL_DATA_PATH, 
+      name: BLADE_DESKTOP_NAME || '',
+      space: SPACE_INFO || '',
+    })
   })
 })
 
