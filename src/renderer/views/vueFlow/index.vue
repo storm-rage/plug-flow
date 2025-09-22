@@ -90,12 +90,10 @@ onMove(()=> {
   
 })
 onMoveEnd(()=> { 
-  // Object.assign(currentNodeToolDoc, {});
-  // localStorage.setItem('currentNodeToolDoc', JSON.stringify({}));
+ 
   console.log('onMoveEnd',nodes.value)
 })
 onViewportChange(()=> {
-  console.log('onViewportChange')
   handlePaneClick({} as MouseEvent)
 
 })
@@ -200,7 +198,6 @@ function handlePaneClick(e: MouseEvent) {
   }
   removeSelectedNodes([])
   
-  console.log('pene move',e)
 }
 function handleMove() {
   // 当画布移动时，如果弹窗显示则更新其位置
@@ -1124,11 +1121,11 @@ onMounted(() => {
 }
 .step-flow-bg {
   position: absolute;
-  height: 100%;
+  height: 40px;
   background: linear-gradient(107deg, #62acec, #3489f6 42.73%, #7e27ff 99.87%);
   z-index: 90;
   border-radius: 50px;
-  top: 0;
+  top: 2px;
   left: 0;
   padding: 0 2px;
 }
