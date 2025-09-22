@@ -6,7 +6,6 @@ import { ref } from 'vue';
 
   
 const props = defineProps<NodeProps<any>>()
-  console.log('props customnode',props)
   const imgSrc = ref('')
   const initImgSrc = () => {
     if(props.data?.iconUrl) {

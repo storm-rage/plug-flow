@@ -40,12 +40,14 @@ const debouncedHandleTabsTopClick  = debounce((tab:any,index:any) => {
     isTabClick.value = true
   const selectedTab = tabsTop[index]
   if (selectedTab) {
+    setTimeout(() => {
     activeTabTop.value = index
+    }, 0);
     let childTab = tabsTop[index].child
     if (Array.isArray(childTab) && childTab.length > 0) {
-      tabs.splice(0, tabs.length, ...childTab) // 清空并替换
+      tabs.splice(0, tabs.length, ...childTab)
 
-      let cachedTabIndex = 0; // 默认为第一个
+      let cachedTabIndex = 0;
       try {
         const currentTabStr = localStorage.getItem('currentTab')
         console.log('currentTabStr', currentTabStr)
@@ -71,7 +73,6 @@ const debouncedHandleTabsTopClick  = debounce((tab:any,index:any) => {
 
     }
     console.log('tabs===>',tabs)
-    //todo:如果当前不在流程页面，则跳转到流程页面
     if (router.currentRoute.value.path != '/') {
 
       router.push('/')
@@ -88,7 +89,7 @@ const debouncedHandleTabsTopClick  = debounce((tab:any,index:any) => {
     }
     
   }
-}, 10);
+}, 1000, { leading: true , trailing: false });
 function handleTabsTopClick(tab:any,index : any) {
   debouncedHandleTabsTopClick(tab,index)
 }
@@ -107,7 +108,7 @@ const debounceSendQuery = debounce((tabId: any) => {
   setTimeout(() => {
     isSendingQuery.value = false;
   }, 1000);
-}, 10);
+}, 1000, { leading: true , trailing: false });
 
 let isTabClick = ref(false)
 const debouncedTabsClick = debounce((tab:any,index:any) => { 

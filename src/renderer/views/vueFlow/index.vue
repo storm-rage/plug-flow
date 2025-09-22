@@ -491,19 +491,21 @@ const throttledProcessData = throttle(async (res: any) => {
       setTimeout(() => {
         formatNodeData(res.result);
         isShowFlow.value = true;
-      }, 0);
-    } else {
-      dialogVisible.value = false;
-    }
-    
     console.log('<<<<<<<<<<<<<<<<<<<<查询到的流程数据===>', nodes.value);
-    await nextTick();
+    // await nextTick();
     setViewport({ x: 0, y: 0, zoom: 1 });
     handlePaneClick({} as MouseEvent);
     dragDistance.value = { x: 0, y: 0 };
     res.result.length > 0 && debounceLastNodeClick();
     isFetching.value = false;
-    sessionStorage.setItem('isFlowLoaded', JSON.stringify(true))
+    sessionStorage.setItem('isFlowLoaded', JSON.stringify(true));
+    (window as any).electronAPI.send('flow-loaded', true)
+      }, 0);
+    } else {
+      dialogVisible.value = false;
+    }
+    
+    
 
   }
 }, 1000, { leading: true, trailing: false }); 
