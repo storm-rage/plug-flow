@@ -328,14 +328,13 @@ async function formatNodeData(result: any[]) {
   let maxBottomY = 0
   nodes.value = []
   edges.value = []
-  
-  stepFlow.value = result.map(item => ({
+  stepFlow.value = flowDataTotal.value.map((item:any) => ({
     process_id: item.process_id,
     process_name: item.process_name
   }))
-  console.log('stepFlow ',stepFlow.value )
+  console.log('stepFlow',stepFlow.value, result )
 
-  result.forEach((item: any, index: number) => { 
+  result.length && result.forEach((item: any, index: number) => { 
     //每一个流程
     const flowBaseY = index === 0 ? 60 : maxBottomY + 150 - 70
     
@@ -434,7 +433,7 @@ let isFetching = ref(false)
 
 const debounceLastNodeClick = debounce(() => { 
   handleLastNodeClick()
-}, 300)
+}, 1000)
 async function handleLastNodeClick() { 
   let currentNode = JSON.parse(localStorage.getItem('currentNodeToolDoc') || '{}')
   if(!currentTab?.id) return
@@ -481,15 +480,36 @@ let currentTab = currentTabStr ? JSON.parse(currentTabStr) : null
 onBeforeMount(() => {  
   
 })
-
+function findFlowNodes(nodes:any[]) {
+  let targetFlowId:string | null = null
+  console.log('findFlowNodes',currentFlow.value)
+  if(currentFlow.value && currentFlow.value.process_id) {
+    nodes.length && nodes.forEach(itemFlow => {
+        if(itemFlow.process_id == currentFlow.value.process_id) {
+            targetFlowId = itemFlow.process_id
+          }
+    })
+  }
+  let flow = nodes.find(flow => flow.process_id == targetFlowId)
+    console.log('flow',flow)
+  return flow || nodes[0]
+}
+interface FlowItem {
+  process_id: string;
+  process_name: string;
+  step_data: any[];
+}
+let flowDataTotal = ref<FlowItem[]>([])
 let isShowFlow = ref(false)
 const throttledProcessData = throttle(async (res: any) => {
   if (res.code == 0) { 
     isShowFlow.value = false;
+    flowDataTotal.value = res.result;
+    let currentFlow = findFlowNodes(res.result)
 
     if(res.result.length > 0) { 
       setTimeout(() => {
-        formatNodeData(res.result);
+        formatNodeData([{...currentFlow}]);
         isShowFlow.value = true;
     console.log('<<<<<<<<<<<<<<<<<<<<查询到的流程数据===>', nodes.value);
     // await nextTick();
@@ -499,7 +519,6 @@ const throttledProcessData = throttle(async (res: any) => {
     res.result.length > 0 && debounceLastNodeClick();
     isFetching.value = false;
     sessionStorage.setItem('isFlowLoaded', JSON.stringify(true));
-    (window as any).electronAPI.send('flow-loaded', true)
       }, 0);
     } else {
       dialogVisible.value = false;
@@ -656,10 +675,20 @@ let errorDialogTop = computed(() => {
 const activeStepIndex = ref(0)
 const activeStepOffsetX = ref(0)
 const activeStepItemWidth = ref(0)
+let currentFlow = computed(()=>{
+  return flowDataTotal.value[activeStepIndex.value]
+})
 function handleStepFlowClick(item:any,index:any) {
   console.log('step-flow-click', item, index)
+  if(dialogVisible.value) {
+    dialogVisible.value = false
+  }
   activeStepIndex.value = index
   updateActiveStepPosition(index)
+  let targetFlow = findFlowNodes(flowDataTotal.value)
+  formatNodeData([{...targetFlow}]);
+  debounceLastNodeClick()
+
 }
 async function updateActiveStepPosition(index: number) {
   await nextTick()
