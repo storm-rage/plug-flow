@@ -680,6 +680,7 @@ let currentFlow = computed(()=>{
 })
 function handleStepFlowClick(item:any,index:any) {
   console.log('step-flow-click', item, index)
+  isShowFlow.value = false
   if(dialogVisible.value) {
     dialogVisible.value = false
   }
@@ -687,7 +688,10 @@ function handleStepFlowClick(item:any,index:any) {
   updateActiveStepPosition(index)
   let targetFlow = findFlowNodes(flowDataTotal.value)
   formatNodeData([{...targetFlow}]);
+  setTimeout(() => { 
+    isShowFlow.value = true
   debounceLastNodeClick()
+  }, 0)
 
 }
 async function updateActiveStepPosition(index: number) {
