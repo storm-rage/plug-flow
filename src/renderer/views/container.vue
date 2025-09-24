@@ -360,7 +360,7 @@ async function initReporting ({}) {
     const appName = (window as any).appName || 'plug-flow';
     const version = globalData.desktopCenter?.version || '1.0.0';
 
-    const url = 'https://galileotelemetry.tencent.com/collect'; // 伽利略上报地址，不变
+    const url = 'https://galileotelemetry.tencent.com'; // 伽利略上报地址，不变
     const id = 'SDK-97007142ac36659869b9'; // 插板id
     console.log('AegisV2 init', id, user, globalData, appName, version, userInfo.value);
     // let mailAddress = userInfo.value.find(i => i.name == 'mailAddress')
@@ -405,13 +405,11 @@ function openWorkWechatContact() {
   try {
     // 构造联系人信息对象
     const contactInfo = {
-      name: contactPerson.value.split('：')[1],
+      name: contactPerson.value,
       email: '', // 如果有邮箱信息可以添加
       userId: '', // 如果有企业微信用户ID可以添加
       kfId: '' // 如果有客服ID可以添加
     };
-    
-    // 发送 IPC 消息到主进程
     electronAPI?.send('open-work-wechat-contact', contactInfo);
     console.log('发送打开企业微信请求成功', contactInfo);
   } catch (error) {
@@ -488,11 +486,12 @@ function openWorkWechatContact() {
     bottom: -50px;
     pointer-events: none;
     position: fixed;
-    right: -50px;
+    right: -150px;
     z-index: 99;
+    width: 700px;
     img {
       opacity: .15;
-      width: 400px;
+      width: 100%;
     }
 }
 .main {

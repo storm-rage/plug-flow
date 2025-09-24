@@ -509,7 +509,8 @@ const throttledProcessData = throttle(async (res: any) => {
 
     if(res.result.length > 0) { 
       setTimeout(() => {
-        formatNodeData([{...currentFlow}]);
+        formatNodeData(res.result);
+        // formatNodeData([{...currentFlow}]);
         isShowFlow.value = true;
     console.log('<<<<<<<<<<<<<<<<<<<<查询到的流程数据===>', nodes.value);
     // await nextTick();
@@ -880,7 +881,7 @@ onMounted(() => {
         style="width:100%;height:100%;border:none;"
       ></iframe>
   </t-drawer>
-  <div class="setp-box-bg" v-if="stepFlow.length > 1">
+  <div class="setp-box-bg" v-if="false">
     <div class="setp-box">
       <div class="step-flow">
           <div class="step-flow-item" 
