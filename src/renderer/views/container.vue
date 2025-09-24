@@ -13,7 +13,7 @@ import Aegis from 'aegis-web-sdk';
 const electronAPI = (window as any).electronAPI;
 
 const router = useRouter()
-interface TabItem {
+export interface TabItem {
   name: string;
   path?: string;
   index: number;
