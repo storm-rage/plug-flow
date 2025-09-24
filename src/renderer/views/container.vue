@@ -8,6 +8,7 @@ import type { InputProps } from 'tdesign-vue-next';
 import { useRouter } from 'vue-router'
 import { debounce } from "lodash";
 import Aegis from 'aegis-web-sdk';
+import tabTree from '../views/components/tabTree.vue';
 
 
 const electronAPI = (window as any).electronAPI;
@@ -30,6 +31,52 @@ let isShowSubTab = computed(() => {
 const title = ref('和平精英');
 let tabs = reactive<any>([])
 let tabsTop = reactive<TabItem[]>([])
+let tabsTopNest = computed(() => { 
+  // return tabsTop[activeTabTop.value]?.child
+  return [
+    {
+      id: '1',
+      name: 'step1',
+      index: 0,
+      child: [
+        {
+          id: '1-1',
+          name: 'step1-1',
+          index: 0,
+          child: [
+            {
+              id: '1-1-1',
+              name: 'step1-1-1',
+              index: 0
+            }
+          ]
+        },
+        {
+          id: '1-2',
+          name: 'step1-2',
+          index: 1
+        }
+      ]
+    },
+    {
+      id: '2',
+      name: 'step2',
+      index: 1,
+      child: [
+        {
+          id: '2-1',
+          name: 'step2-1',
+          index: 0
+        },
+        {
+          id: '2-2',
+          name: 'step2-2',
+          index: 1
+        }
+      ]
+    }
+  ]
+});
 let activeTabTop = ref(0);
 let activeTab = ref(0);
 
@@ -468,6 +515,13 @@ function openWorkWechatContact() {
             </template>
           </t-input>
       </div>
+    </div>
+    <div v-if="false">
+      <tab-tree 
+        :tabs="tabsTopNest || []" 
+        :active-tab="activeTab"
+        @tab-click="handleTabsClick"
+      />
     </div>
     <div class="content">
       <div class="tabs" v-if="isShowSubTab">

@@ -505,7 +505,7 @@ const throttledProcessData = throttle(async (res: any) => {
   if (res.code == 0) { 
     isShowFlow.value = false;
     flowDataTotal.value = res.result;
-    let currentFlow = findFlowNodes(res.result)
+    // let currentFlow = findFlowNodes(res.result)
 
     if(res.result.length > 0) { 
       setTimeout(() => {
