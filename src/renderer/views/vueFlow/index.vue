@@ -517,16 +517,13 @@ const throttledProcessData = throttle(async (res: any) => {
     handlePaneClick({} as MouseEvent);
     dragDistance.value = { x: 0, y: 0 };
     res.result.length > 0 && debounceLastNodeClick();
-    isFetching.value = false;
     sessionStorage.setItem('isFlowLoaded', JSON.stringify(true));
       }, 0);
     } else {
       dialogVisible.value = false;
     }
-    
-    
-
   }
+  isFetching.value = false;
 }, 1000, { leading: true, trailing: false }); 
 onMounted(() => {
 
