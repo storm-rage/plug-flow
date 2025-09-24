@@ -327,6 +327,21 @@ onMounted(() => {
     });
   electronAPI.on('request-failed',(res:any) => {
     console.error('request-failed',res)
+    if ((window as any).AegisV2) {
+    (window as any).AegisV2.error({
+      msg: `Request failed: ${res.error || 'Unknown error'}`,
+      url: res.url,
+      line: 0,
+      column: 0,
+      error: new Error(`Request failed: ${res.error}`),
+      extra: {
+        // requestId: res.requestId,
+        // statusCode: res.statusCode,
+        response: res,
+        timestamp: Date.now()
+      }
+    });
+  }
   });
   electronAPI.on('request-data',(res:any) => {
     console.log('request-data',res)
@@ -355,7 +370,6 @@ async function initReporting ({}) {
       console.warn('Failed to get user info:', e);
     }
 
-    // 获取全局变量信息（适配 Vue3 Composition API）
     const globalData = (window as any).$global || (window as any).globalData || {};
     const appName = (window as any).appName || 'plug-flow';
     const version = globalData.desktopCenter?.version || '1.0.0';
@@ -393,6 +407,8 @@ async function initReporting ({}) {
         pv: true,      // 页面访问统计
         performance: true, // 性能监控
       },
+      spa: true, // 单页应用支持
+      delay: 1000, // 延迟上报时间
     });
 
     console.log('AegisV2 initialized successfully');
