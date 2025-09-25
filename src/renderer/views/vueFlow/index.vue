@@ -196,6 +196,7 @@ function handlePaneClick(e: MouseEvent) {
   if (dialogVisible.value) {
     dialogVisible.value = false;
   }
+  if(e){}
   removeSelectedNodes([])
   
 }

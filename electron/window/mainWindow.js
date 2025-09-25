@@ -32,8 +32,8 @@ export function createMainWindow() {
   console.log('Index path:', indexPath);
   console.log('File exists:', fs.existsSync(indexPath));
   if (fs.existsSync(indexPath)) {
-    // mainWindow.loadURL(`file://${indexPath}`)
-      mainWindow.loadURL('http://localhost:5173') // vite dev 默认端口
+    mainWindow.loadURL(`file://${indexPath}`)
+      // mainWindow.loadURL('http://localhost:5173') // vite dev 默认端口
     // mainWindow.loadFile(indexPath)//生产环境
   } else {
     console.error('Index file not found');
