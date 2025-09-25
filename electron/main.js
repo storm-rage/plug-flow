@@ -7,7 +7,7 @@ import { createRequire } from 'module'
 import { createMainWindow } from './window/mainWindow.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const iconPath = path.join(__dirname, 'icon.ico') 
-
+import { initAegis, reportEvent, info, error, report, reportTime, setUser } from './utils/aegis'
 async function tomlToJson(tomlFilePath, jsonFilePath = null) {
     try {
         // 检查文件是否存在
@@ -32,7 +32,8 @@ async function tomlToJson(tomlFilePath, jsonFilePath = null) {
         throw error;
     }
 }
-
+// 尽早初始化 Aegis
+  initAegis()
 let protocolConfig = null
 let mainWindow;
 // 在应用启动时就处理单实例锁
@@ -142,6 +143,29 @@ app.whenReady().then(async() => {
       createMainWindow()
     }
   })
+  // Aegis IPC 处理器
+    ipcMain.handle('aegis-call', (_e, { method, args }) => {
+      try {
+        switch (method) {
+          case 'reportEvent':
+            return reportEvent(args[0], args[1]);
+          case 'info':
+            return info(args[0], args[1]);
+          case 'error':
+            return error(args[0], args[1]);
+          case 'report':
+            return report(args[0], args[1]);
+          case 'reportTime':
+            return reportTime(args[0], args[1]);
+          case 'setUser':
+            return setUser(args[0]);
+          default:
+            console.warn('未知的 Aegis 方法:', method);
+        }
+      } catch (err) {
+        console.error('Aegis IPC 调用失败:', err);
+      }
+    })
   ipcMain.handle('get-protocol-config', async (event) => {
     return protocolConfig;
   });
