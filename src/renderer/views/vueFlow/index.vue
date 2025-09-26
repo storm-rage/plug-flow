@@ -439,7 +439,7 @@ async function handleLastNodeClick() {
   let currentNode = JSON.parse(localStorage.getItem('currentNodeToolDoc') || '{}')
   if(!currentTab?.id) return
   
-  let targetNode = null;
+  let targetNode: any = null;
   
   if (currentNode.id && nodes.value.length > 0) {
     targetNode = nodes.value.find(node => node.id == currentNode.id);

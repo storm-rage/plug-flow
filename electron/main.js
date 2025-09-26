@@ -7,33 +7,8 @@ import { createRequire } from 'module'
 import { createMainWindow } from './window/mainWindow.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const iconPath = path.join(__dirname, 'icon.ico') 
-import { initAegis, reportEvent, info, error, report, reportTime, setUser } from './utils/aegis'
-async function tomlToJson(tomlFilePath, jsonFilePath = null) {
-    try {
-        // 检查文件是否存在
-        if (!fs.existsSync(tomlFilePath)) {
-            throw new Error(`TOML file not found: ${tomlFilePath}`);
-        }
-        
-        // 读取 TOML 文件
-        const tomlData = fs.readFileSync(tomlFilePath, 'utf-8');
-        
-        // 解析为 JavaScript 对象
-        const jsonData = toml.parse(tomlData);
-        
-        // 如果指定了输出路径，则写入 JSON 文件
-        if (jsonFilePath) {
-            fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2), 'utf-8');
-        }
-        
-        return jsonData;
-    } catch (error) {
-        console.error('Error parsing TOML file:', error);
-        throw error;
-    }
-}
-// 尽早初始化 Aegis
-  initAegis()
+import { initAegis, report, reportEvent, setUser, info, error, reportTime } from './utils/aegis.js'
+
 let protocolConfig = null
 let mainWindow;
 // 在应用启动时就处理单实例锁
@@ -509,6 +484,7 @@ ipcMain.on('get-cookie-data',async (event,data)=> {
                 });
               }
             })
+            initAegis(cookies)
             //todo:先检测本地配置文件，没有则请求服务器数据
               uploadTomFile()
 

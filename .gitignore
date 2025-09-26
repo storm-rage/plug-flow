@@ -12,6 +12,8 @@ dist
 dist-electron
 dist-ssr
 *.local
+dist-ele
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*

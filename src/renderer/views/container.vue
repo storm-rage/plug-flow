@@ -374,24 +374,21 @@ onMounted(() => {
     });
   electronAPI.on('request-failed',(res:any) => {
     console.error('request-failed',res)
-    if ((window as any).AegisV2) {
-    (window as any).AegisV2.error({
-      msg: `Request failed: ${res.error || 'Unknown error'}`,
-      url: res.url,
-      line: 0,
-      column: 0,
-      error: new Error(`Request failed: ${res.error}`),
-      extra: {
-        // requestId: res.requestId,
-        // statusCode: res.statusCode,
-        response: res,
-        timestamp: Date.now()
-      }
-    });
-  }
+    electronAPI.invoke('aegis-call', { 
+      method: 'error',
+      args: ['request failed', { 
+        data: res,
+      }]
+     });
   });
   electronAPI.on('request-data',(res:any) => {
     console.log('request-data',res)
+    electronAPI.invoke('aegis-call', { 
+      method: 'reportEvent',
+      args: ['request data', { 
+        data: res,
+      }]
+     });
   });
   electronAPI.on('get-local-data',(res:any) => {
     console.log('get-local-data',res)
@@ -409,6 +406,7 @@ onMounted(() => {
 })
 let loading = ref(true)
 async function initReporting ({}) {
+  return
   try {
     let user = {};
     try {

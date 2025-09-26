@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setTitle: (title) => ipcRenderer.send('set-title', title),
   openExternal: (url) => shell.openExternal(url),
   getCookies: (url) => ipcRenderer.invoke('get-cookies', url),
+  aegisCall: (method, args) => ipcRenderer.invoke('aegis-call', { method, args }),
 
 
   send: (channel, data) => ipcRenderer.send(channel, data),
