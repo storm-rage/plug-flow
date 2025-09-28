@@ -33,7 +33,7 @@ function initAegis(info) {
     const memoryUsage = process.memoryUsage();
     extraInfo.mainMemory = Math.round(memoryUsage.rss / 1024) + 'k'
     // extraInfo.main_memory_heap_mb = Math.round(memoryUsage.heapUsed / 1024);
-    extraInfo.mainMemoryPercent = Math.round((memoryUsage.heapUsed / memoryUsage.heapTotal) * 100);
+    extraInfo.mainMemoryPercent = Math.round((memoryUsage.heapUsed / memoryUsage.heapTotal) * 100) + '%';
     // 获取用户信息
     const userEmail = userInfo.email;
     const completeExtraInfo  = {
