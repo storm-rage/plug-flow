@@ -82,7 +82,7 @@ const formatTabs = computed(() => {
   justify-content: center;
 }
 .tab-item.active {
-  color: #3484ea;
+  color: var(--primary-color-hover);
   font-weight: bold;
 }
 .col-sub-tab {

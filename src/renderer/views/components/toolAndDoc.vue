@@ -904,14 +904,14 @@ onMounted(()=>{
                 .t-select-option {
                     color: #fff;
                     &:hover { 
-                        background-color: #3484ea;
+                        background-color: var(--primary-color-hover);
                     }
                 }
                 .t-select-option.t-is-selected:not(.t-is-disabled) {
                     background-color: rgba(52, 132, 234, 0.3);
                     color: #fff;
                     &:hover {
-                        background-color: #3484ea;
+                        background-color: var(--primary-color-hover);
                     }
                 }
             }
@@ -1006,7 +1006,7 @@ onMounted(()=>{
     }
     
     &:hover {
-      background: #3484ea;
+      background: var(--primary-color-hover);
       color: white;
     }
     
@@ -1039,7 +1039,7 @@ onMounted(()=>{
         }
         &:hover {
             // background: rgba(117, 117, 117, .3);
-            background: #3484ea;
+            background: var(--primary-color-hover);
             color: white;
         }
     }
@@ -1066,11 +1066,11 @@ onMounted(()=>{
     background-color: #37383b !important;
     
     &:hover {
-      background-color: #3484ea !important;
+      background-color: var(--primary-color-hover) !important;
     }
     
     &.t-is-selected {
-      background-color: #3484ea !important;
+      background-color: var(--primary-color-hover) !important;
       color: #fff !important;
     }
   }

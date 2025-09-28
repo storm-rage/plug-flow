@@ -797,7 +797,7 @@ onMounted(() => {
         margin-left: 8px;
     }
     &:hover {
-      background: #3484ea;
+      background: var(--primary-color-hover);
       color: white;
     }
     
@@ -829,7 +829,7 @@ onMounted(() => {
         }
         &:hover {
             // background: rgba(117, 117, 117, .3);
-            background: #3484ea;
+            background: var(--primary-color-hover);
             color: white;
         }
     }

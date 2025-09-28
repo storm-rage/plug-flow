@@ -610,9 +610,9 @@ function openWorkWechatContact() {
           font-size: 16px;
           margin: 0 20px;
           &:hover,&.active {
-              color: #3484ea;
+              color: var(--primary-color-hover);
               font-weight: 600;
-              border-bottom: 1px solid #3484ea;
+              border-bottom: 1px solid var(--primary-color-hover);
           }
       }
   }
@@ -643,9 +643,9 @@ function openWorkWechatContact() {
       font-size: 16px;
       margin-right: 40px;
       &:hover,&.active {
-              color: #3484ea;
+              color: var(--primary-color-hover);
               font-weight: 600;
-              border-bottom: 1px solid #3484ea;
+              border-bottom: 1px solid var(--primary-color-hover);
           }
     }
   }
@@ -656,11 +656,11 @@ function openWorkWechatContact() {
     .contact-link {
       font-size: 16px;
       text-decoration: underline;
-      color: rgba(45, 120, 216, 0.80);
+      color: var(--primary-color-hover);
       line-height: 24px;
       cursor: pointer;
       &:hover {
-        color: rgba(45, 120, 216, 1);
+        color:  rgba(20, 207, 144, 0.80);
       }
     }
   }
@@ -671,9 +671,12 @@ function openWorkWechatContact() {
   border-color: rgba(255, 255, 255, 0.1);
 }
 :deep(.t-input--focused) {
-  --td-brand-color: #029de5; /* 设置品牌色，会影响焦点边框 */
-  border-color: #029de5 !important;
+  --td-brand-color: var(--primary-color-hover); /* 设置品牌色，会影响焦点边框 */
+  border-color: var(--primary-color-hover) !important;
   box-shadow: 0 0 0 2px rgba(2, 157, 229, 0.2) !important;
+}
+:deep(.t-input:hover) {
+  border-color: var(--primary-color-hover) !important;
 }
 :deep(.t-input__inner) {
   color: #fff;

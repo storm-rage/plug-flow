@@ -1089,7 +1089,7 @@ onMounted(() => {
     color: rgba(255, 255, 255, 0.8);
     
     &:hover {
-      background: #3484ea;
+      background: var(--primary-color-hover);
       color: white;
     }
     
