@@ -559,7 +559,7 @@ async function uploadTomFile() {
   } catch (error) {
     console.error('文件读取或上传过程中出错:', error);
     if (mainWindow && mainWindow.webContents) {
-      mainWindow.webContents.send('file-upload-error', error.message);
+      mainWindow.webContents.send('file-upload-error', error);
     }
   }
 }

@@ -372,6 +372,18 @@ onMounted(() => {
             debounceSendQuery(categoryId)
       }
     });
+  electronAPI.on('file-upload-error',(res:any) => {
+    console.error('file-upload-error',res)
+    if(loading.value) {
+      loading.value = false
+    }
+    electronAPI.invoke('aegis-call', { 
+      method: 'error',
+      args: ['file-upload-error', { 
+        data: res,
+      }]
+     });
+  });
   electronAPI.on('request-failed',(res:any) => {
     console.error('request-failed',res)
     electronAPI.invoke('aegis-call', { 
