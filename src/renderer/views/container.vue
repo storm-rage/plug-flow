@@ -7,7 +7,6 @@ import TopBar from "./topBar/index.vue"
 import type { InputProps } from 'tdesign-vue-next';
 import { useRouter } from 'vue-router'
 import { debounce } from "lodash";
-import Aegis from 'aegis-web-sdk';
 import tabTree from '../views/components/tabTree.vue';
 
 
@@ -246,7 +245,6 @@ onBeforeMount(() => {
   (window as any).electronAPI?.on('get-cookie-data',(res:any) => { 
     userInfo.value = res
     console.log('<<<<< get-cookie-data==',res)
-    initReporting({})
   });
   if((window as any).electronAPI) {
     (window as any).electronAPI.on('file-parsing-completed', (res:any) => { 
@@ -417,62 +415,7 @@ onMounted(() => {
     
 })
 let loading = ref(true)
-async function initReporting ({}) {
-  return
-  try {
-    let user = {};
-    try {
-      user = (window as any).electronAPI?.getUserInfo?.() || {};
-    } catch (e) {
-      console.warn('Failed to get user info:', e);
-    }
 
-    const globalData = (window as any).$global || (window as any).globalData || {};
-    const appName = (window as any).appName || 'plug-flow';
-    const version = globalData.desktopCenter?.version || '1.0.0';
-
-    const url = 'https://galileotelemetry.tencent.com'; // 伽利略上报地址，不变
-    const id = 'SDK-97007142ac36659869b9'; // 插板id
-    console.log('AegisV2 init', id, user, globalData, appName, version, userInfo.value);
-    // let mailAddress = userInfo.value.find(i => i.name == 'mailAddress')
-    let mail = '';
-    userInfo.value.forEach((item: any) => {
-      if(item.name == 'mailAddress') {
-        mail = item.value
-      }
-    });
-    // 初始化 Aegis 实例
-    (window as any).AegisV2 = new Aegis({
-      id, // 项目token，即上报伽利略监控的唯一标识
-      uid: mail || 'unknown', // 用户邮箱
-      hostUrl: url ,
-      // 自定义扩展字段
-      extField: {
-        app_version: version,
-        app_name: appName,
-      },
-      beforeReport(event:any) {
-        if (event.msg?.includes('"isTrusted":true')) {
-          // 过滤掉无意义的 Promise Error
-          return false;
-        }
-        return true;
-      },
-      plugin: {
-        device: true,  // 设备信息收集
-        error: true,   // 错误监控
-        pv: true,      // 页面访问统计
-        performance: true, // 性能监控
-      },
-      spa: true, // 单页应用支持
-      delay: 1000, // 延迟上报时间
-    });
-
-    console.log('AegisV2 initialized successfully');
-  } catch (error) {
-    console.error('Aegis initialization failed:', error);
-  }
-}
 function openWorkWechatContact() {
   if (!contactPerson.value) return;
   try {
@@ -489,6 +432,19 @@ function openWorkWechatContact() {
     console.error('发送打开企业微信请求失败:', error);
   }
 }
+const BG_COLORS = ['#23D0A1', '#777777', '#F86332', '#9853FF', '#00B5EE', '#9FB817'];
+let spaceBg = computed(()=> {
+  return BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)]
+})
+let spaceName = computed(()=> {
+  console.log('spaceName',(window as any).electronAPI?.env)
+  return (window as any).electronAPI?.env.SPACE_NAME || '未知空间名'
+})
+let spaceLogo = computed(()=> {
+  return (window as any).electronAPI?.env.SPACE_LOGO || ''
+})
+let tabTreeRef = ref<HTMLElement | null>(null);
+
 
 </script>
 <template>
@@ -497,9 +453,11 @@ function openWorkWechatContact() {
     <div class="container">
       <div class="left">
           <div class="logo">
-            <img :src="Peace" alt="Peace"></img>
+            <img v-if="Peace" :src="Peace" alt="Peace"></img>
+            <img v-else-if="spaceLogo" :src="spaceLogo" alt="Peace"></img>
+            <div v-else class="logo-bg" :style="{backgroundColor: spaceBg}">{{spaceName[0]}}</div>
           </div>
-          <div class="title">{{title}}</div>
+          <div class="title">{{ title || spaceName}}</div>
         </div>
       <div class="tabs">
         <div 
@@ -526,14 +484,15 @@ function openWorkWechatContact() {
           </t-input>
       </div>
     </div>
-    <div v-if="false">
+    <div v-if="false"
+    ref="tabTreeRef">
       <tab-tree 
         :tabs="tabsTopNest || []" 
         :active-tab="activeTab"
         @tab-click="handleTabsClick"
       />
     </div>
-    <div class="content">
+    <div class="content" :style="{ height: `calc(100% - 50px - ${tabTreeRef?.offsetHeight || 0}px)` }">
       <div class="tabs" v-if="isShowSubTab">
         <div 
           class="sub-tab" 
@@ -563,12 +522,12 @@ function openWorkWechatContact() {
 </template>
 <style scoped lang="less">
 .photon-logo {
-    bottom: -50px;
+    bottom: -100px;
     pointer-events: none;
     position: fixed;
-    right: -150px;
+    right: -200px;
     z-index: 99;
-    width: 700px;
+    width: 680px;
     img {
       opacity: .15;
       width: 100%;
@@ -580,7 +539,8 @@ function openWorkWechatContact() {
   height: calc(100% - 64px);
 }
 .container {
-  padding: 15px 40px;
+  padding: 0 40px;
+  line-height: 61px;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.9);
   display: flex;
@@ -593,9 +553,16 @@ function openWorkWechatContact() {
     .logo {
       width: 30px;
       height: 30px;
+      line-height: 30px;
       img {
         width: 100%;
         height: 100%;
+      }
+      .logo-bg {
+        width: 100%;
+        height: 100%;
+        line-height: 30px;
+        border-radius: 6px;
       }
     }
     .title {
@@ -623,7 +590,6 @@ function openWorkWechatContact() {
 }
 .content { 
   position: relative;
-  height: calc(100% - 50px);
   font-size: 12px;
   color: #dfdfdf;
   background-color: #141517;
@@ -656,11 +622,11 @@ function openWorkWechatContact() {
     .contact-link {
       font-size: 16px;
       text-decoration: underline;
-      color: var(--primary-color-hover);
+      color: rgba(45, 120, 216, 0.80);
       line-height: 24px;
       cursor: pointer;
       &:hover {
-        color:  rgba(20, 207, 144, 0.80);
+        color:  var(--primary-color-hover);
       }
     }
   }

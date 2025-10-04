@@ -56,39 +56,33 @@ const formatTabs = computed(() => {
         >
         {{ childItem.name }}
       </div>
-      <!-- <tab-tree 
-        v-if="item.child && item.child.length" 
-        :tabs="item.child" 
-        :active-tab="activeTab"
-        @tab-click="handleChildClick"
-      /> -->
     </div>
   </div>
 </template>
 <style lang="less" scoped>
 .tab-tree {
-  // display: flex;
-  // justify-content: center;
-  border-top: 1px solid #2b2b2b;
-  padding: 4px 0 3px 0;
   font-size: 14px;
-  border-top: 1px solid #2b2b2b;
   background-color: #17181a;
 }
 .tab-item {
-  padding: 5px 10px;
+  padding: 0 10px;
   cursor: pointer;
   display: flex;
   justify-content: center;
-}
-.tab-item.active {
-  color: var(--primary-color-hover);
-  font-weight: bold;
+  border-top: 1px solid var(--border-color-dark);
 }
 .col-sub-tab {
   display: flex;
   justify-content: center;
-  padding: 5px 10px;
+  margin: 0 10px;
+  height: 36px;
+  line-height: 36px;
   cursor: pointer;
+  color: var(--text-color-primary);
+  &.active {
+    color: var(--primary-color-hover);
+    font-weight: bold;
+    border-bottom: 1px solid var(--primary-color-hover);
+  }
 }
 </style>
